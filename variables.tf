@@ -10,3 +10,6 @@ variable "aws_region" {}
 variable "k8_version" {}
 variable "user_for_admin_role" {}
 variable "user_for_dev_role" {}
+variable "gitops_url" {}
+variable "gitops_username" {}
+variable "gitops_password" {}
