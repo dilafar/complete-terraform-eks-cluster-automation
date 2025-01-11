@@ -1,6 +1,10 @@
 resource "kubernetes_namespace" "banking_ns" {
   metadata {
     name = "banking-ns"
+
+    labels = {
+      "istio-injection" = "enabled"
+    }
   }
 }
 
@@ -64,5 +68,17 @@ resource "kubernetes_cluster_role_binding" "cluster_viewer" {
     kind      = "User"
     name      = "admin"
     api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+resource "kubernetes_service_account" "externalsecrets-sa" {
+  depends_on = [ aws_iam_role.externalsecrets-role ]
+  metadata {
+    name = "externalsecrets-sa"
+    namespace = "banking-ns"
+
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.externalsecrets-role.arn
+    }
   }
 }

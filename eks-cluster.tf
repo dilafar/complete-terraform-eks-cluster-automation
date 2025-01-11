@@ -27,6 +27,41 @@ module "eks" {
       max_size       = 8
       desired_size   = 4
     }
+    istio = {
+      instance_types = [var.instance_type]
+      min_size       = 2
+      max_size       = 8
+      desired_size   = 4
+    }
+  }
+
+  node_security_group_additional_rules = {
+    ingress_15017 = {
+      description                   = "Cluster API to Istio Webhook namespace.sidecar-injector.istio.io"
+      protocol                      = "TCP"
+      from_port                     = 15017
+      to_port                       = 15017
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    
+    ingress_15012 = {
+      description                   = "Cluster API to nodes ports/protocols"
+      protocol                      = "TCP"
+      from_port                     = 15012
+      to_port                       = 15012
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    
+    ingress_istio_sg = {
+      description                   = "LB port forward to nodes"
+      protocol                      = "TCP"
+      from_port                     = 30000
+      to_port                       = 32767
+      type                          = "ingress"
+      source_security_group_id      = aws_security_group.istio-gateway-lb.id
+    }
   }
 
 
@@ -60,6 +95,7 @@ module "eks_blueprints_addons" {
     }
   }
 
+  enable_external_secrets                = true
   enable_aws_load_balancer_controller    = true
  # enable_karpenter                       = true
  # enable_kube_prometheus_stack           = true
@@ -72,8 +108,17 @@ module "eks_blueprints_addons" {
       {
         name = "extraArgs.scale-down-unneeded-time"
         value = "1m"
+      },
+      {
+        name = "extraArgs.skip-nodes-with-local-storage"
+        value = false
+      },
+      {
+        name = "extraArgs.skip-nodes-with-system-pods"
+        value = false
       }
     ]
   }
+
  
 }
