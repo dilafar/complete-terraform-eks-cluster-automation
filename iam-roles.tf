@@ -118,3 +118,49 @@ resource "aws_iam_role" "externalsecrets-role" {
     })
   }
 }
+
+resource "aws_iam_role" "externaldns-role" {
+  name = "externaldns_sa_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = ["sts:AssumeRoleWithWebIdentity"]
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        }
+      },
+    ]
+  })
+
+  inline_policy {
+    name = "externaldns_sa_policy"
+    policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "route53:ChangeResourceRecordSets"
+      ],
+        "Resource": [
+          "arn:aws:route53:::hostedzone/*"
+      ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "route53:ListHostedZones",
+          "route53:ListResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+})
+  }
+}

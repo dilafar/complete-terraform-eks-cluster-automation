@@ -8,6 +8,12 @@ resource "kubernetes_namespace" "banking_ns" {
   }
 }
 
+resource "kubernetes_namespace" "external_dns" {
+  metadata {
+    name = "external-dns"
+  }
+}
+
 resource "kubernetes_role" "namespace_viewer" {
   metadata {
     name = "namespace-viewer"
@@ -71,7 +77,7 @@ resource "kubernetes_cluster_role_binding" "cluster_viewer" {
   }
 }
 
-resource "kubernetes_service_account" "externalsecrets-sa" {
+resource "kubernetes_service_account" "externalsecrets_sa" {
   depends_on = [ aws_iam_role.externalsecrets-role ]
   metadata {
     name = "externalsecrets-sa"
@@ -79,6 +85,18 @@ resource "kubernetes_service_account" "externalsecrets-sa" {
 
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.externalsecrets-role.arn
+    }
+  }
+}
+
+resource "kubernetes_service_account" "externaldns_sa" {
+  depends_on = [ aws_iam_role.externaldns-role ]
+  metadata {
+    name = "externaldns-sa"
+    namespace = "external-dns"
+
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.externaldns-role.arn
     }
   }
 }
