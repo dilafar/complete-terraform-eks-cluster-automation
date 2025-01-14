@@ -1,14 +1,14 @@
 locals {
   aws_k8s_role_mapping = [
     {
-        rolearn = aws_iam_role.external-admin.arn
-        username = "admin"
-        groups = ["none"]
+      rolearn  = aws_iam_role.external-admin.arn
+      username = "admin"
+      groups   = ["none"]
     },
     {
-        rolearn = aws_iam_role.external-developer.arn
-        username = "developer"
-        groups = ["none"]  
+      rolearn  = aws_iam_role.external-developer.arn
+      username = "developer"
+      groups   = ["none"]
     }
   ]
 }
@@ -104,15 +104,15 @@ resource "aws_iam_role" "externalsecrets-role" {
         {
           Effect   = "Allow"
           Resource = "*"
-          Action   = [
-	          "secretsmanager:GetRandomPassword",
-						"secretsmanager:GetResourcePolicy",
-					  "secretsmanager:GetSecretValue",
-					  "secretsmanager:DescribeSecret",
-					  "secretsmanager:ListSecretVersionIds",
-					  "secretsmanager:ListSecrets",
-					  "secretsmanager:BatchGetSecretValue"
-	        ]
+          Action = [
+            "secretsmanager:GetRandomPassword",
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds",
+            "secretsmanager:ListSecrets",
+            "secretsmanager:BatchGetSecretValue"
+          ]
         },
       ]
     })
@@ -139,28 +139,28 @@ resource "aws_iam_role" "externaldns-role" {
   inline_policy {
     name = "externaldns_sa_policy"
     policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": [
-          "route53:ChangeResourceRecordSets"
-      ],
-        "Resource": [
-          "arn:aws:route53:::hostedzone/*"
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "route53:ChangeResourceRecordSets"
+          ],
+          "Resource" : [
+            "arn:aws:route53:::hostedzone/*"
+          ]
+        },
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "route53:ListHostedZones",
+            "route53:ListResourceRecordSets"
+          ],
+          "Resource" : [
+            "*"
+          ]
+        }
       ]
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "route53:ListHostedZones",
-          "route53:ListResourceRecordSets"
-      ],
-      "Resource": [
-        "*"
-      ]
-    }
-  ]
-})
+    })
   }
 }

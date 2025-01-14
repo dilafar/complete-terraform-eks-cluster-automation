@@ -16,14 +16,14 @@ resource "kubernetes_namespace" "external_dns" {
 
 resource "kubernetes_role" "namespace_viewer" {
   metadata {
-    name = "namespace-viewer"
+    name      = "namespace-viewer"
     namespace = "banking-ns"
   }
 
   rule {
-    api_groups     = [""]
-    resources      = ["pods", "services", "secrets", "configmaps", "persistentvolumes"]
-    verbs          = ["get", "list", "watch", "describe"]
+    api_groups = [""]
+    resources  = ["pods", "services", "secrets", "configmaps", "persistentvolumes"]
+    verbs      = ["get", "list", "watch", "describe"]
   }
   rule {
     api_groups = ["apps"]
@@ -78,9 +78,9 @@ resource "kubernetes_cluster_role_binding" "cluster_viewer" {
 }
 
 resource "kubernetes_service_account" "externalsecrets_sa" {
-  depends_on = [ aws_iam_role.externalsecrets-role ]
+  depends_on = [aws_iam_role.externalsecrets-role]
   metadata {
-    name = "externalsecrets-sa"
+    name      = "externalsecrets-sa"
     namespace = "banking-ns"
 
     annotations = {
@@ -90,9 +90,9 @@ resource "kubernetes_service_account" "externalsecrets_sa" {
 }
 
 resource "kubernetes_service_account" "externaldns_sa" {
-  depends_on = [ aws_iam_role.externaldns-role ]
+  depends_on = [aws_iam_role.externaldns-role]
   metadata {
-    name = "externaldns-sa"
+    name      = "externaldns-sa"
     namespace = "external-dns"
 
     annotations = {
